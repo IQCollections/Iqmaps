@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Iqmaps</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoic3QxMDEyMTA2NSIsImEiOiJjbDcxazhyOXowYmRiM29uOWsyeG1oOWpuIn0.bu204Sd-13JeSN8athb2hw</string>
+</resources>
