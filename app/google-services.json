@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "749493556394",
+    "project_id": "iqmaps-9ade0",
+    "storage_bucket": "iqmaps-9ade0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749493556394:android:89508a48b26f77a43c6cd3",
+        "android_client_info": {
+          "package_name": "com.highiq.iqmaps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "749493556394-cgf5bvk48mnc3c100te625r61na0bs82.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRzyfN_K7JRDApsm73rCvBD7osOWz_jPM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "749493556394-cgf5bvk48mnc3c100te625r61na0bs82.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

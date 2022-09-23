@@ -17,7 +17,7 @@
         mapbox:mapbox_cameraTargetLng="28.0473"
         mapbox:mapbox_cameraZoom="12"
 
-        />
+        tools:ignore="MissingClass" />
 
 
 </LinearLayout>
