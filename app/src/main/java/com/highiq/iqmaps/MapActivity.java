@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 //Places KEy AIzaSyBiLyrgZCVOri6wN39_aiQvaiNy2-7Gf_s
+//Directions key AIzaSyDp0grCRn2i366c8NhU0QmnCGcjm7J6l8Y
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     @SuppressLint("MissingPermission")
