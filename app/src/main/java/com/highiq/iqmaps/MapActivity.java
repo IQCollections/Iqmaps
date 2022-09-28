@@ -1,6 +1,7 @@
 package com.highiq.iqmaps;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -36,9 +37,10 @@ import com.google.android.gms.tasks.Task;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+//Places KEy AIzaSyBiLyrgZCVOri6wN39_aiQvaiNy2-7Gf_s
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback{
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
@@ -149,7 +151,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         try {
             if(mLocationPermissionGranted){
-                Task location = mFusedLocationProviderClient.getLastLocation();//error from video 5 in the playlist
+                @SuppressLint("MissingPermission") Task location = mFusedLocationProviderClient.getLastLocation();//error from video 5 in the playlist
                     location.addOnCompleteListener(new OnCompleteListener() {
                         @Override
                         public void onComplete(@NonNull Task task) {
