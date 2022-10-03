@@ -25,6 +25,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -88,14 +91,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-    private static final float DEFAULT_ZOOM = 15;
+    private static final float DEFAULT_ZOOM = 15f;
+    private static final int PLACE_PICKER_REQUEST = 1;
     private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
             new LatLng(-40, -168), new LatLng(71, 136));
 
 
     //widgets
     private AutoCompleteTextView mSearchText;
-    private ImageView mGps;
+    private ImageView mGps, mInfo, mPlacePicker;
+
 
 
     //variables
@@ -105,6 +110,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GoogleApiClient mGoogleApiClient;
     private PlaceInfo mPlace;
+    private Marker mMarker;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,6 +118,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map);
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
         mGps = (ImageView) findViewById(R.id.ic_gps);
+        mInfo = (ImageView) findViewById(R.id.ic_info);
+        mPlacePicker = (ImageView) findViewById(R.id.place_picker);
 
         getLocationPermission();
     }
@@ -155,8 +163,60 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+        mInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: clicked place info");
+                try {
+                    if(mMarker.isInfoWindowShown()){ //error from video 10
+                        mMarker.hideInfoWindow(); //error from video 10
+                    }
+                    else{
+                        Log.d(TAG, "onClick: place info: " + mPlace.toString());
+                        mMarker.showInfoWindow(); //error from video 10
+                    }
+
+                }catch (NullPointerException e){
+                    Log.e(TAG, "onClick: NullPointerException" + e.getMessage());
+                }
+
+            }
+        });
+
+        mPlacePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder(); //error from video 12
+
+                try{
+                    startActivityForResult(builder.build(MapActivity.this), PLACE_PICKER_REQUEST); //error from video 12
+                }catch (GooglePlayServicesRepairableException e){
+                    Log.e(TAG, "onClick: GooglePlayServicesRepairableException: " + e.getMessage());
+                }catch (GooglePlayServicesNotAvailableException e){
+                    Log.e(TAG, "onClick: GooglePlayServicesNotAvailableException: " + e.getMessage());
+                }
+
+            }
+        });
+
         hideSoftKeyboard();
     }
+
+    //protected void class is from video 12
+    protected void onActivityResult (int requestCode, int resultCode, Intent data){
+        if(requestCode == PLACE_PICKER_REQUEST){
+            if(resultCode == RESULT_OK){
+                Place place = PlacePicker.getPlace(this, data);
+
+                PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
+                        .getPlaceById(mGoogleApiClient, place.getId());
+                placeResult.setResultCallback(mUpdatePlaceDetailsCallback);
+            }
+
+        }
+    }
+
 
     private void geoLocate(){
         Log.d(TAG, "geoLocate: Geolocating");
@@ -213,6 +273,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         catch (SecurityException e) {
             Log.e(TAG, "getDeviceLocation: SecurityException" + e.getMessage() );
         }
+    }
+
+    private void moveCamera(LatLng latLng, float zoom, PlaceInfo placeInfo ){
+        Log.d(TAG, "moveCamera: Moving Camera to: Lat: " + latLng.latitude
+                + "Long: " + latLng.longitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        mMap.clear();
+
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapActivity.this));
+
+
+        if(placeInfo != null){
+            try {
+                String snippet = "Address: " + placeInfo.getAddress() + "\n" +
+                "Phone Number: " + placeInfo.getPhoneNumber() + "\n" +
+                "Website: " + placeInfo.getWebsiteUri() + "\n" +
+                "Price Rating: " + placeInfo.getRating() + "\n";
+
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .title(placeInfo.getName())
+                        .snippet(snippet);
+
+                mMarker = mMap.addMarker(options); //error from video 10 in the playlist
+
+            }catch (NullPointerException e){
+                Log.e(TAG, "moveCamera: NullPointerException " + e.getMessage());
+
+            }
+
+        }
+        else{
+            mMap.addMarker(new MarkerOptions().position(latLng));
+        }
+
+        hideSoftKeyboard();
     }
 
     private void moveCamera(LatLng latLng, float zoom, String title){
@@ -350,7 +447,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
 
             moveCamera(new LatLng(place.getViewport().getCenter().latitude,
-                    place.getViewport().getCenter().longitude), DEFAULT_ZOOM, mPlace.getName());
+                    place.getViewport().getCenter().longitude), DEFAULT_ZOOM, mPlace);
             places.release();
         }
     };
