@@ -2,12 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -19,14 +18,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Iqmaps"
         tools:targetApi="31">
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${AIzaSyC8cLuPcApXvOHR_rcOvYuJE7YIjNoqZG4}" />
-
+            android:value="AIzaSyC8cLuPcApXvOHR_rcOvYuJE7YIjNoqZG4" />
+        <meta-data
+            android:name="com.google.android.gms.location.places.GeoDataApi"
+            android:value="AIzaSyBiLyrgZCVOri6wN39_aiQvaiNy2-7Gf_s" />
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
+            android:value="@integer/google_play_services_version" />
 
         <activity
             android:name=".MainActivity"
@@ -37,9 +45,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapActivity">
-
-        </activity>
+        <activity android:name=".MapActivity"></activity>
     </application>
 
 </manifest>

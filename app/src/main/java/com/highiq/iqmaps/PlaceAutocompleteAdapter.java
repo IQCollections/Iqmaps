@@ -28,6 +28,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.text.style.CharacterStyle;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -36,6 +37,7 @@ import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.data.DataBufferUtils;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -79,7 +81,7 @@ public class PlaceAutocompleteAdapter
     /**
      * The autocomplete filter used to restrict queries to a specific set of place types.
      */
-    private AutocompleteFilter mPlaceFilter;
+    public AutocompleteFilter mPlaceFilter;
 
     /**
      * Initializes with a resource for text rows and autocomplete query bounds.
@@ -147,7 +149,7 @@ public class PlaceAutocompleteAdapter
 
                 // We need a separate list to store the results, since
                 // this is run asynchronously.
-                ArrayList<AutocompletePrediction> filterData = new ArrayList<>();
+                ArrayList<T> filterData = new ArrayList<T>();
 
                 // Skip the autocomplete query if no constraints are given.
                 if (constraint != null) {
@@ -202,10 +204,10 @@ public class PlaceAutocompleteAdapter
      *
      * @param constraint Autocomplete query string
      * @return Results from the autocomplete API or null if the query was not successful.
-     * @see GeoDataClient#getAutocompletePredictions(String, LatLngBounds, AutocompleteFilter)
-     * @see AutocompletePrediction#freeze()
+     //* @see GeoDataClient#getAutocompletePredictions(String, LatLngBounds, AutocompleteFilter)
+    // * @see AutocompletePrediction#freeze()
      */
-    private ArrayList<AutocompletePrediction> getAutocomplete(CharSequence constraint) {
+    private ArrayList<T> getAutocomplete(CharSequence constraint) {
         Log.i(TAG, "Starting autocomplete query for: " + constraint);
 
         // Submit the query to the autocomplete API and retrieve a PendingResult that will

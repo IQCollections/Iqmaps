@@ -2,6 +2,7 @@ package com.highiq.iqmaps;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -27,22 +28,25 @@ import androidx.core.content.ContextCompat;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.internal.OnConnectionFailedListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.model.Place;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -204,10 +208,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     //protected void class is from video 12
-    protected void onActivityResult (int requestCode, int resultCode, Intent data){
-        if(requestCode == PLACE_PICKER_REQUEST){
-            if(resultCode == RESULT_OK){
-                Place place = PlacePicker.getPlace(this, data);
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = (Place) PlacePicker.getPlace(this, data);
 
                 PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
                         .getPlaceById(mGoogleApiClient, place.getId());
@@ -412,7 +417,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 places.release();
                 return;
             }
-            final Place place = places.get(0);
+            final com.google.android.gms.location.places.Place place = places.get(0);
 
             try {
                 mPlace = new PlaceInfo();
@@ -443,7 +448,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 Log.d(TAG, "onResult: Place" + mPlace.toString());
             }catch (NullPointerException e){
-                Log.e(TAG, "onResult: NullPointerException", + e.getMessage());
+                Log.e(TAG, "onResult: NullPointerException"+e.getMessage());
             }
 
             moveCamera(new LatLng(place.getViewport().getCenter().latitude,
