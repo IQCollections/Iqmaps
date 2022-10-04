@@ -35,6 +35,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -65,7 +66,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    private Object Places;
+
 
     @SuppressLint("MissingPermission")
     @Override
