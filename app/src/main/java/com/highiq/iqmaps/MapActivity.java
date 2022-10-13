@@ -1,9 +1,13 @@
 package com.highiq.iqmaps;
 
+import static com.google.android.material.internal.ContextUtils.getActivity;
+
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -19,13 +23,21 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -37,6 +49,7 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -62,11 +75,14 @@ import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 import com.skyfishjy.library.RippleBackground;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback ,NavigationView.OnNavigationItemSelectedListener{
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, LocationListener, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -79,7 +95,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private MaterialSearchBar materialSearchBar;
     private View mapView;
     private Button btnFind;
+    private Button btnGo;
     private RippleBackground rippleBg;
+
+
+    //nearby place
+    private Button btnHospital;
+    private Button btnRest;
+    private Button btnSchool;
+    int PROXIMITY_RADIUS = 10000;
+    double latitude, longitude;
+    double end_latitude, end_longitude;
 
     private final float DEFAULT_ZOOM = 15;
     DrawerLayout dl;
@@ -108,6 +134,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         mapView = mapFragment.getView();
+
+        //btn go
+        btnHospital = findViewById(R.id.btn_hospital);
+        btnRest = findViewById(R.id.btn_restaurant);
+        btnSchool = findViewById(R.id.btn_school);
+        btnGo = findViewById(R.id.btn_go);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MapActivity.this);
         Places.initialize(MapActivity.this, getString(R.string.google_maps_api));
@@ -246,7 +278,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         StringBuilder stringMapsIcons = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
                         stringMapsIcons.append("location="+currentMarkerLocation.latitude+","+currentMarkerLocation.longitude);
                         stringMapsIcons.append("&radius=10000");
-                        stringMapsIcons.append("&type=church");
+                        stringMapsIcons.append("&type=school");
                         stringMapsIcons.append("&sensor=true");
                         stringMapsIcons.append("&key="+getResources().getString(R.string.google_maps_api));
 
@@ -263,6 +295,51 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             }
         });
+
+        /*btnHospital.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.clear();
+                String hospital = "hospital";
+                String url = getUrl(latitude, longitude, hospital);
+                Object dataTransfer[] = new Object[2];
+                GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
+
+                dataTransfer[0] = mMap;
+                dataTransfer[1] = url;
+
+
+                getNearbyPlaces.execute(dataTransfer);
+                Toast.makeText(MapActivity.this, "Showing nearby Hospitals", Toast.LENGTH_SHORT).show();
+            }
+        });
+        btnRest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        btnSchool.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });*/
+
+       /* btnGo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.clear();
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(new LatLng(end_latitude, end_longitude));
+                markerOptions.title("Destination");
+                //markerOptions.snippet()
+                float results[] = new float[10];
+                Location.distanceBetween(latitude, longitude, end_latitude, end_longitude, results);
+                markerOptions.snippet("Distance = "+results[0]);
+                mMap.addMarker(markerOptions);
+            }
+        });*/
     }
 
     @SuppressLint("MissingPermission")
@@ -361,7 +438,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                  }
              }
          });
+
+        // directions
+        mMap.setOnMarkerClickListener(this);
     }
+
+
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -445,6 +529,97 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         dl.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+
+    }
+
+    public void onClick(View v) {
+        LatLng currentMarkerLocation = mMap.getCameraPosition().target;
+        Object dataTransfer[] = new Object[2];
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
+        String url;
+
+        switch (v.getId()) {
+            case R.id.btn_hospital:
+                mMap.clear();
+                String hospital = "hospital";
+                url = getUrl(currentMarkerLocation.latitude, currentMarkerLocation.longitude, hospital);
+
+                dataTransfer[0] = mMap;
+                dataTransfer[1] = url;
+
+
+                getNearbyPlaces.execute(dataTransfer);
+                Toast.makeText(MapActivity.this, "Showing nearby Hospitals", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.btn_restaurant:
+                mMap.clear();
+                String restaurant = "restaurant";
+                url = getUrl(currentMarkerLocation.latitude, currentMarkerLocation.longitude, restaurant);
+
+                dataTransfer[0] = mMap;
+                dataTransfer[1] = url;
+
+
+                getNearbyPlaces.execute(dataTransfer);
+                Toast.makeText(MapActivity.this, "Showing nearby restaurants", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.btn_school:
+                mMap.clear();
+                String school = "school";
+                url = getUrl(currentMarkerLocation.latitude, currentMarkerLocation.longitude, school);
+
+                dataTransfer[0] = mMap;
+                dataTransfer[1] = url;
+
+
+                getNearbyPlaces.execute(dataTransfer);
+                Toast.makeText(MapActivity.this, "Showing nearby schools", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.btn_go:
+                dataTransfer = new Object[3];
+                url = getDirectionsUrl();
+                GetDirections getDirections = new GetDirections();
+                dataTransfer[0] = mMap;
+                dataTransfer[1] = url;
+                dataTransfer[2] = new LatLng(end_latitude, end_longitude );
+
+                getDirections.execute(dataTransfer);
+                break;
+        }
+    }
+
+    private String getDirectionsUrl(){
+        LatLng currentMarkerLocation = mMap.getCameraPosition().target;
+        StringBuilder googleDirectionsUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
+        googleDirectionsUrl.append("origin="+currentMarkerLocation.latitude+","+currentMarkerLocation.longitude);
+        googleDirectionsUrl.append("&destination="+end_latitude+","+end_longitude);
+        googleDirectionsUrl.append("&key="+getResources().getString(R.string.google_maps_api));
+        return googleDirectionsUrl.toString();
+    }
+
+    private String getUrl(double latitude, double longitude, String nearbyPlaces){
+        LatLng currentMarkerLocation = mMap.getCameraPosition().target;
+        StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlaceUrl.append("location="+currentMarkerLocation.latitude+","+currentMarkerLocation.longitude);
+        googlePlaceUrl.append("&radius=10000");
+        googlePlaceUrl.append("&type="+nearbyPlaces);
+        googlePlaceUrl.append("&sensor=true");
+        googlePlaceUrl.append("&key="+getResources().getString(R.string.google_maps_api));
+
+        return googlePlaceUrl.toString();
+    }
+
+    @Override
+    public boolean onMarkerClick(@NonNull Marker marker) {
+        end_latitude = marker.getPosition().latitude;
+        end_longitude = marker.getPosition().longitude;
+        return false;
+    }
+
 
 
 }

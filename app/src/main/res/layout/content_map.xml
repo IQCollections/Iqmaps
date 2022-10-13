@@ -25,7 +25,10 @@
         app:rb_rippleAmount="4"
         app:rb_scale="6">
 
+
     </com.skyfishjy.library.RippleBackground>
+
+
 
     <com.mancj.materialsearchbar.MaterialSearchBar
         style="@style/MaterialSearchBarLight"
@@ -40,6 +43,39 @@
         android:elevation="5dp"
         android:outlineProvider="bounds"
         app:mt_placeholder="Search a place"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btn_hospital"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="60dp"
+            android:layout_marginLeft="2dp"
+            android:onClick="onClick"
+            android:text="Hospital" />
+
+        <Button
+            android:id="@+id/btn_restaurant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="60dp"
+            android:layout_marginLeft="2dp"
+            android:onClick="onClick"
+            android:text="Restaurant" />
+
+        <Button
+            android:id="@+id/btn_school"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="60dp"
+            android:layout_marginLeft="2dp"
+            android:onClick="onClick"
+            android:text="School" />
+
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="30dp"
@@ -60,13 +96,26 @@
 
     <Button
         android:id="@+id/btn_find"
-        android:layout_width="250dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/DodgerBlue"
         android:text="Find Landmark"
         android:textColor="@color/black"
-        android:background="@color/DodgerBlue"
-        android:layout_margin="16dp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_go"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginVertical="20dp"
+        android:layout_marginLeft="140dp"
+        android:onClick="onClick"
+        android:text="Go" />
 
 </RelativeLayout>

@@ -45,6 +45,7 @@ dependencies {
     //implementation 'com.mapbox.maps:android:10.7.0'
     //implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.0'
 
+
     //Dependencies for Google Play Services
     implementation 'com.google.android.gms:play-services-location:20.0.0'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
@@ -59,4 +60,9 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.iammert:ReadableBottomBar:0.2'
     implementation 'com.android.volley:volley:1.2.1'
+
+    // Google Directions
+    implementation 'com.google.maps:google-maps-services:2.1.0'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
+    //reminder to add mavenControl in the repository if not working
 }
