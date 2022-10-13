@@ -16,13 +16,13 @@
         android:layout_height="match_parent" />
 
     <com.skyfishjy.library.RippleBackground
+        android:id="@+id/ripple_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/ripple_bg"
         app:rb_color="#0099CC"
+        app:rb_duration="3000"
         app:rb_radius="32dp"
         app:rb_rippleAmount="4"
-        app:rb_duration="3000"
         app:rb_scale="6">
 
     </com.skyfishjy.library.RippleBackground>
@@ -41,14 +41,31 @@
         android:outlineProvider="bounds"
         app:mt_placeholder="Search a place"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/btnUserLocation"
+        app:fabCustomSize="30dp"
+        app:maxImageSize="30dp"
+        app:borderWidth="0dp"
+        android:src="@drawable/location"
+        android:backgroundTint="@android:color/white"
+        app:fabSize="mini"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="90dp"
+        />
+
+
     <Button
         android:id="@+id/btn_find"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="Find Church"
-        android:textColor="#FFFFFF"
-        android:background="@color/colorPrimary"
+        android:text="Find Landmark"
+        android:textColor="@color/black"
+        android:background="@color/DodgerBlue"
         android:layout_margin="16dp"
         android:textStyle="bold"/>
 

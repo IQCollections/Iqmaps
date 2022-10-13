@@ -28,11 +28,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -48,6 +50,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 import com.skyfishjy.library.RippleBackground;
@@ -65,7 +68,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private Location mLastKnownLocation;
     private LocationCallback locationCallback;
-
+    private FloatingActionButton btnUserLocation;
     private MaterialSearchBar materialSearchBar;
     private View mapView;
     private Button btnFind;
@@ -246,8 +249,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
 
         if (mapView != null && mapView.findViewById(Integer.parseInt("1")) != null) {
             View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
@@ -299,6 +305,42 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return false;
             }
         });
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                Toast.makeText(MapActivity.this, "This location is: "+marker.getTitle(), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+         btnUserLocation = findViewById(R.id.btnUserLocation);
+
+         btnUserLocation.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 try {
+
+                         Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+                         locationResult.addOnCompleteListener(new OnCompleteListener<Location>() {
+                             @Override
+                             public void onComplete(@NonNull Task<Location> task) {
+                                 if (task.isSuccessful()) {
+                                     // Set the map's camera position to the current location of the device.
+                                     Location location = task.getResult();
+                                     LatLng currentLatLng = new LatLng(location.getLatitude(),
+                                             location.getLongitude());
+                                     CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng,
+                                             DEFAULT_ZOOM);
+                                     mMap.moveCamera(update);
+                                 }
+                             }
+                         });
+
+                 } catch (SecurityException e) {
+                     Log.e("Exception: %s", e.getMessage());
+                 }
+             }
+         });
     }
 
     @Override

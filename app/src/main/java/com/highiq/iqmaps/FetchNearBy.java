@@ -37,6 +37,7 @@ public class FetchNearBy extends AsyncTask<Object,String,String> {
                 markerOptions.position(latLng);
                 googleMap.addMarker(markerOptions);
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+
             }
         }catch (Exception e){
             Log.e("ERROR",e.getMessage());
