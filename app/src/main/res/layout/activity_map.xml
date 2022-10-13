@@ -2,9 +2,31 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MapActivity"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    app:layoutDescription="@xml/header_scene"
+    >
+<androidx.drawerlayout.widget.DrawerLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/header_scene"
+    android:id="@+id/mapsLayout">
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        android:importantForAccessibility="auto"
+        app:headerLayout="@layout/navheader"
+        app:menu="@menu/nav_menu"
+        />
+
     <include layout="@layout/content_map" />
+</androidx.drawerlayout.widget.DrawerLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

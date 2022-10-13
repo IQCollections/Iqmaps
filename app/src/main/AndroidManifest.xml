@@ -18,8 +18,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Iqmaps"
-        tools:targetApi="31"
-        tools:replace="android:allowBackup">
+        tools:replace="android:allowBackup"
+        tools:targetApi="31">
+        <activity
+            android:name=".favourites"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -33,6 +40,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -44,16 +52,12 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
-
-
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-
-        </activity>
-        <activity android:name=".MapActivity"
-            android:exported="true"/>
+            android:exported="true"></activity>
+        <activity
+            android:name=".MapActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
