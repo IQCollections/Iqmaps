@@ -97,8 +97,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         dl.addDrawerListener(toggle);
         toggle.syncState();
         nv.bringToFront();
+
         nv.setNavigationItemSelectedListener(this);
+
         materialSearchBar = findViewById(R.id.searchBar);
+        materialSearchBar.setNavButtonEnabled(false);
         btnFind = findViewById(R.id.btn_find);
         rippleBg = findViewById(R.id.ripple_bg);
 
@@ -239,10 +242,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     @Override
                     public void run() {
                         rippleBg.stopRippleAnimation();
-                       // startActivity(new Intent(MapActivity.this, MainActivity.class));
+
                         StringBuilder stringMapsIcons = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
                         stringMapsIcons.append("location="+currentMarkerLocation.latitude+","+currentMarkerLocation.longitude);
-                        stringMapsIcons.append("&radius=1000");
+                        stringMapsIcons.append("&radius=10000");
                         stringMapsIcons.append("&type=church");
                         stringMapsIcons.append("&sensor=true");
                         stringMapsIcons.append("&key="+getResources().getString(R.string.google_maps_api));
