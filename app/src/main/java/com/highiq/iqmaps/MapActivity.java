@@ -303,50 +303,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        /*btnHospital.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMap.clear();
-                String hospital = "hospital";
-                String url = getUrl(latitude, longitude, hospital);
-                Object dataTransfer[] = new Object[2];
-                GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
-
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-
-
-                getNearbyPlaces.execute(dataTransfer);
-                Toast.makeText(MapActivity.this, "Showing nearby Hospitals", Toast.LENGTH_SHORT).show();
-            }
-        });
-        btnRest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-        btnSchool.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });*/
-
-       /* btnGo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMap.clear();
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(new LatLng(end_latitude, end_longitude));
-                markerOptions.title("Destination");
-                //markerOptions.snippet()
-                float results[] = new float[10];
-                Location.distanceBetween(latitude, longitude, end_latitude, end_longitude, results);
-                markerOptions.snippet("Distance = "+results[0]);
-                mMap.addMarker(markerOptions);
-            }
-        });*/
     }
 
     @SuppressLint("MissingPermission")
