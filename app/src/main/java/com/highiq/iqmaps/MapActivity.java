@@ -50,11 +50,14 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -82,7 +85,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, LocationListener, GoogleMap.OnMarkerClickListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, LocationListener, GoogleMap.OnMarkerClickListener, TaskLoadedCallback {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -97,6 +100,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Button btnFind;
     private Button btnGo;
     private RippleBackground rippleBg;
+
+    //marker
+    private MarkerOptions place1, place2;
+    private Polyline currentPolyline;
 
 
     //nearby place
@@ -296,50 +303,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        /*btnHospital.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMap.clear();
-                String hospital = "hospital";
-                String url = getUrl(latitude, longitude, hospital);
-                Object dataTransfer[] = new Object[2];
-                GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
-
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-
-
-                getNearbyPlaces.execute(dataTransfer);
-                Toast.makeText(MapActivity.this, "Showing nearby Hospitals", Toast.LENGTH_SHORT).show();
-            }
-        });
-        btnRest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-        btnSchool.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });*/
-
-       /* btnGo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMap.clear();
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(new LatLng(end_latitude, end_longitude));
-                markerOptions.title("Destination");
-                //markerOptions.snippet()
-                float results[] = new float[10];
-                Location.distanceBetween(latitude, longitude, end_latitude, end_longitude, results);
-                markerOptions.snippet("Distance = "+results[0]);
-                mMap.addMarker(markerOptions);
-            }
-        });*/
     }
 
     @SuppressLint("MissingPermission")
@@ -452,9 +415,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 51) {
             if (resultCode == RESULT_OK) {
-                getDeviceLocation();
+               getDeviceLocation();
             }
         }
+
     }
 
     @SuppressLint("MissingPermission")
@@ -580,7 +544,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Toast.makeText(MapActivity.this, "Showing nearby schools", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_go:
-                dataTransfer = new Object[3];
+               dataTransfer = new Object[3];
                 url = getDirectionsUrl();
                 GetDirections getDirections = new GetDirections();
                 dataTransfer[0] = mMap;
@@ -588,9 +552,40 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 dataTransfer[2] = new LatLng(end_latitude, end_longitude );
 
                 getDirections.execute(dataTransfer);
+
+                btnGo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new FetchURL(MapActivity.this).execute(getUrlDirections(place1.getPosition(), place2.getPosition(), "driving"), "driving");
+                    }
+                });
+
+                place1 = new MarkerOptions().position(new LatLng(currentMarkerLocation.latitude, currentMarkerLocation.longitude)).title("location 1");
+                place2 = new MarkerOptions().position(new LatLng(end_latitude, end_longitude)).title("position 2");
+
+
                 break;
         }
     }
+
+    private String getUrlDirections(LatLng origin, LatLng dest, String directionMode) {
+        LatLng currentMarkerLocation = mMap.getCameraPosition().target;
+        // origin of route
+        String str_origin = "origin=" + currentMarkerLocation.latitude + ","+ currentMarkerLocation.longitude;
+        // destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        // mode
+        String mode = "mode=" + directionMode;
+        // building the parameters of the web service
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        // output
+        String output = "json";
+        // building the url
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getResources().getString(R.string.google_maps_api);
+        return url;
+    }
+
+
 
     private String getDirectionsUrl(){
         LatLng currentMarkerLocation = mMap.getCameraPosition().target;
@@ -621,6 +616,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
 
+    @Override
+    public void onTaskDone(Object... values) {
+        if (currentPolyline != null){
+            currentPolyline.remove();
 
+        }
+        currentPolyline = mMap.addPolyline((PolylineOptions) values[0]);
+    }
 }
 

@@ -1,11 +1,15 @@
 package com.highiq.iqmaps;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,9 +40,14 @@ public class GetDirections extends AsyncTask<Object, String, String> {
 
     @Override
     protected void onPostExecute(String s) {
-        HashMap<String, String> directionsList = null;
+       // HashMap<String, String> directionsList = null;
+        String[] directionsList;
         DataParser parser = new DataParser();
         directionsList = parser.parseDirections(s);
+        displayDirection(directionsList);
+
+
+        /*directionsList = parser.parseDirections(s);
         duration = directionsList.get("duration");
         distance = directionsList.get("distance");
 
@@ -48,7 +57,20 @@ public class GetDirections extends AsyncTask<Object, String, String> {
         markerOptions.title("Duration = "+ duration);
         markerOptions.snippet("Distance = "+ distance);
 
-        mMap.addMarker(markerOptions);
+        mMap.addMarker(markerOptions);*/
 
+    }
+
+    public void  displayDirection(String[] directionsList){
+        int count = directionsList.length;
+
+        for (int i = 0; i<count; i++){
+            PolylineOptions options = new PolylineOptions();
+            options.color(Color.CYAN);
+            options.width(10);
+            options.addAll(PolyUtil.decode(directionsList[i]));
+
+            mMap.addPolyline(options);
+        }
     }
 }
