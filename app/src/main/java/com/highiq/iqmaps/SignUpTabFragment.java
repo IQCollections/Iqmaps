@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.security.MessageDigest;
+
 public class SignUpTabFragment extends Fragment {
     private Button btnRegister;
     private FirebaseAuth mAuth;
@@ -51,8 +53,8 @@ public class SignUpTabFragment extends Fragment {
             public void onClick(View view) {
                 LoginActivity lg = new LoginActivity();
                 String userEmail = edtRegisterEmail.getText().toString();
-                String userPass = edtRegisterPass1.getText().toString();
-                String userPasscon = edtRegisterPass2.getText().toString();
+                String userPass = encrypt(edtRegisterPass1.getText().toString());
+                String userPasscon = encrypt(edtRegisterPass2.getText().toString());
 
                 if (userEmail.isEmpty() || userPass.isEmpty() || (!userPass.equals(userPasscon))) {
                     Toast.makeText(getActivity(), "You cannot leave the fields blank/Check if your passwords match", Toast.LENGTH_SHORT).show();
@@ -102,6 +104,32 @@ public class SignUpTabFragment extends Fragment {
                 }
             });
 
+        }
+
+
+    }
+    public String encrypt(String password){
+        String result ="";
+        try{
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(password.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            StringBuffer MD5Hash = new StringBuffer();
+
+            for (int i=0; i < messageDigest.length;i++){
+                String h = Integer.toHexString(0xFF & messageDigest[i]);
+                while(h.length() < 2){
+                    h= "0" + h;
+                }
+                MD5Hash.append(h);
+            }
+            result = MD5Hash.toString();
+
+        }catch (Exception e){
+
+        }finally {
+            return result;
         }
 
 

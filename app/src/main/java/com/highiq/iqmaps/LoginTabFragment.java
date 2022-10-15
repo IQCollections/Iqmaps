@@ -18,6 +18,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.security.MessageDigest;
 
 public class LoginTabFragment extends Fragment {
 
@@ -56,7 +59,7 @@ public class LoginTabFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 String userEmail = email.getText().toString();
-                String userPass = pass.getText().toString();
+                String userPass = encrypt(pass.getText().toString());
                 if (userEmail.isEmpty() || userPass.isEmpty()) {
 
 
@@ -67,7 +70,7 @@ public class LoginTabFragment extends Fragment {
                             if (task.isSuccessful()) {
                                 Context context = view.getContext();
                                 Toast.makeText(context, "Successfully Logged in", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(context, MainActivity.class);
+                                Intent intent = new Intent(context,PermissionsActivity.class);
                                 startActivity(intent);
 
 
@@ -83,4 +86,37 @@ public class LoginTabFragment extends Fragment {
         return root;
     }
 
+    public String encrypt(String password){
+        String result ="";
+       try{
+           MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+           digest.update(password.getBytes());
+            byte messageDigest[] = digest.digest();
+
+           StringBuffer MD5Hash = new StringBuffer();
+
+           for (int i=0; i < messageDigest.length;i++){
+                String h = Integer.toHexString(0xFF & messageDigest[i]);
+                while(h.length() < 2){
+                    h= "0" + h;
+                }
+                MD5Hash.append(h);
+           }
+           result = MD5Hash.toString();
+
+       }catch (Exception e){
+
+       }finally {
+           return result;
+       }
+
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+    }
 }
