@@ -302,11 +302,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 try{
+                    if(markName.isEmpty())  {
+                       Toast.makeText(MapActivity.this, "Select a marker!", Toast.LENGTH_SHORT).show();
+                    }else {
                   markName = favDBRef.child(firebaseUser.getUid()).push().getKey();
                   favouritesClass favClass = new favouritesClass(markName,markDes,String.valueOf(end_longitude),String.valueOf(end_latitude));
                    favDBRef.child(firebaseUser.getUid()).child(markName).setValue(favClass);
+                    Toast.makeText(MapActivity.this, "Favourite Added!", Toast.LENGTH_SHORT).show(); }
                 }catch (Exception err){
-                    Toast.makeText(MapActivity.this, "Make sure a maker has been clicked", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapActivity.this, "Make sure a marker has been clicked", Toast.LENGTH_SHORT).show();
                 }
             }
         });
