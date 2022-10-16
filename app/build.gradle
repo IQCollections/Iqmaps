@@ -64,6 +64,7 @@ dependencies {
     // Google Directions
     implementation 'com.google.maps:google-maps-services:2.1.0'
     implementation 'org.slf4j:slf4j-simple:1.7.25'
+    implementation 'com.android.support:multidex:2.0.1'
     //reminder to add mavenControl in the repository if not working
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
 }

@@ -1,9 +1,6 @@
 package com.highiq.iqmaps;
 
-import static com.google.android.material.internal.ContextUtils.getActivity;
-
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
@@ -23,21 +20,13 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -49,8 +38,6 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -78,12 +65,9 @@ import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 import com.skyfishjy.library.RippleBackground;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, LocationListener, GoogleMap.OnMarkerClickListener, TaskLoadedCallback {
 
@@ -91,7 +75,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlacesClient placesClient;
     private List<AutocompletePrediction> predictionList;
-
+    private Location location;
     private Location mLastKnownLocation;
     private LocationCallback locationCallback;
     private FloatingActionButton btnUserLocation;
@@ -380,21 +364,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
              public void onClick(View view) {
                  try {
 
-                         Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-                         locationResult.addOnCompleteListener(new OnCompleteListener<Location>() {
-                             @Override
-                             public void onComplete(@NonNull Task<Location> task) {
-                                 if (task.isSuccessful()) {
-                                     // Set the map's camera position to the current location of the device.
-                                     Location location = task.getResult();
-                                     LatLng currentLatLng = new LatLng(location.getLatitude(),
-                                             location.getLongitude());
-                                     CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng,
-                                             DEFAULT_ZOOM);
-                                     mMap.moveCamera(update);
-                                 }
-                             }
-                         });
+                    findUserLocation();
 
                  } catch (SecurityException e) {
                      Log.e("Exception: %s", e.getMessage());
@@ -550,20 +520,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
                 dataTransfer[2] = new LatLng(end_latitude, end_longitude );
+                findUserLocation();
+                place1 = new MarkerOptions().position(new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude())).title("location 1");
+                place2 = new MarkerOptions().position(new LatLng(end_latitude, end_longitude)).title("position 2");
+
+                new FetchURL(MapActivity.this).execute(getUrlDirections(place1.getPosition(), place2.getPosition(), "driving"), "driving");
 
                 getDirections.execute(dataTransfer);
 
                 btnGo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        findUserLocation();
+
+                        place1 = new MarkerOptions().position(new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude())).title("location 1");
+                        place2 = new MarkerOptions().position(new LatLng(end_latitude, end_longitude)).title("position 2");
+
                         new FetchURL(MapActivity.this).execute(getUrlDirections(place1.getPosition(), place2.getPosition(), "driving"), "driving");
+
                     }
                 });
-
-                place1 = new MarkerOptions().position(new LatLng(currentMarkerLocation.latitude, currentMarkerLocation.longitude)).title("location 1");
-                place2 = new MarkerOptions().position(new LatLng(end_latitude, end_longitude)).title("position 2");
-
-
                 break;
         }
     }
@@ -585,7 +561,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return url;
     }
 
+        private void findUserLocation(){
 
+            @SuppressLint("MissingPermission") Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+            locationResult.addOnCompleteListener(new OnCompleteListener<Location>() {
+                @Override
+                public void onComplete(@NonNull Task<Location> task) {
+                    if (task.isSuccessful()) {
+                        // Set the map's camera position to the current location of the device.
+                        location = task.getResult();
+                        LatLng currentLatLng = new LatLng(location.getLatitude(),
+                                location.getLongitude());
+                        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng,
+                                DEFAULT_ZOOM);
+                        mMap.moveCamera(update);
+                    }
+                }
+            });
+        }
 
     private String getDirectionsUrl(){
         LatLng currentMarkerLocation = mMap.getCameraPosition().target;
@@ -612,6 +605,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public boolean onMarkerClick(@NonNull Marker marker) {
         end_latitude = marker.getPosition().latitude;
         end_longitude = marker.getPosition().longitude;
+
         return false;
     }
 

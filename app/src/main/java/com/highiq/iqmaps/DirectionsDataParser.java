@@ -1,6 +1,6 @@
 package com.highiq.iqmaps;
 
-import com.google.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,8 +37,8 @@ public class DirectionsDataParser {
                         //traversing all points
                         for(int l = 0; l < list.size(); l++){
                             HashMap<String, String> hm = new HashMap<>();
-                            hm.put("lat", Double.toString((list.get(l)).lat));
-                            hm.put("lng", Double.toString((list.get(l)).lng));
+                            hm.put("lat", Double.toString((list.get(l)).latitude));
+                            hm.put("lng", Double.toString((list.get(l)).longitude));
                             path.add(hm);
                         }
                     }
