@@ -11,4 +11,6 @@
     <color name="colorPrimaryDark">#289b35</color>
     <color name="colorAccent">#FF4081</color>
     <color name="DodgerBlue">#1E90FF</color>
+    <color name="red">#F80303</color>
+    <color name="grey">#C5C3C3</color>
 </resources>

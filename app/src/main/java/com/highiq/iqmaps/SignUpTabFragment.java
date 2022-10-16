@@ -15,12 +15,17 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.security.MessageDigest;
 
 public class SignUpTabFragment extends Fragment {
     private Button btnRegister;
     private FirebaseAuth mAuth;
+    private FirebaseUser uid;
+    private DatabaseReference dbRef;
     private EditText edtLoginUser, edtLoginPassword, edtRegisterEmail, edtRegisterUser, edtRegisterPass1, edtRegisterPass2;
 
     @Override
@@ -47,6 +52,8 @@ public class SignUpTabFragment extends Fragment {
         edtRegisterPass1 = root.findViewById(R.id.pass2);
         edtRegisterPass2 = root.findViewById(R.id.confirm_pass2);
         btnRegister = root.findViewById(R.id.btnRegister);
+        dbRef = FirebaseDatabase.getInstance().getReference().child("Settings");
+        uid = FirebaseAuth.getInstance().getCurrentUser();
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,6 +71,8 @@ public class SignUpTabFragment extends Fragment {
                         public void onComplete(@NonNull Task<AuthResult> task) {
 
                             if (task.isSuccessful()) {
+                                SettingsClass settingsClass = new SettingsClass("", "", "Kms", false, false, false, false, false);
+                                dbRef.child(uid.getUid()).setValue(settingsClass);
                                 Toast.makeText(getActivity(), "Succesfull Sign Up!", Toast.LENGTH_SHORT).show();
 
                             } else {

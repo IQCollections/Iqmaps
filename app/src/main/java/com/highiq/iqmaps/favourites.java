@@ -107,9 +107,11 @@ public class favourites extends AppCompatActivity implements NavigationView.OnNa
             case R.id.nav_favourite:
                 intent = new Intent(this, favourites.class);
                 startActivity(intent);
-
                 break;
-
+            case R.id.nav_settings:
+                intent = new Intent(this, Settings.class);
+                startActivity(intent);
+                break;
 
         }
         dl.closeDrawer(GravityCompat.START);

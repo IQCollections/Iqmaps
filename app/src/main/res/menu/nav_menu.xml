@@ -12,5 +12,9 @@
         android:title="Favourites"
         android:icon="@drawable/hrt"/>
 
+    <item
+        android:id="@+id/nav_settings"
+        android:title="Settings"/>
+
 </group>
 </menu>
