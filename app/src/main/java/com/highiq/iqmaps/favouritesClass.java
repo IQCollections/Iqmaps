@@ -6,7 +6,14 @@ public class favouritesClass {
     String favDesc;
     String favLat;
     String favLong;
+    public favouritesClass(){}
 
+    public favouritesClass(String favName,String favDesc,String favLat,String favLong){
+        this.favName = favName;
+        this.favDesc = favDesc;
+        this.favLat = favLat;
+        this.favLong = favLong;
+    }
     public String getFavName() {
         return favName;
     }
@@ -39,6 +46,6 @@ public class favouritesClass {
         this.favLong = favLong;
     }
 
-    public favouritesClass(){}
+
 
 }

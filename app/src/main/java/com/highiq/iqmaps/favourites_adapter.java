@@ -33,8 +33,7 @@ public class favourites_adapter extends ArrayAdapter<favouritesClass> {
         TextView textFavourite = (TextView) listViewItem.findViewById(R.id.txtFavouriteListItems);
 
         favouritesClass favourites = fAdapter.get(position);
-        String txt = "Name: " + favourites.getFavName()+
-                " \n Description: " + favourites.getFavDesc() +
+        String txt = "Description: " + favourites.getFavDesc() +
                 " \n Lat: " +favourites.getFavLat()+
                 " \n Long: " + favourites.getFavLong();
         textFavourite.setText(txt);

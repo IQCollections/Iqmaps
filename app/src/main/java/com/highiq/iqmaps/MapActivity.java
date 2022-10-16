@@ -61,6 +61,10 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 import com.skyfishjy.library.RippleBackground;
@@ -72,6 +76,8 @@ import java.util.List;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, LocationListener, GoogleMap.OnMarkerClickListener, TaskLoadedCallback {
 
     private GoogleMap mMap;
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    FirebaseUser firebaseUser ;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlacesClient placesClient;
     private List<AutocompletePrediction> predictionList;
@@ -84,6 +90,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Button btnFind;
     private Button btnGo;
     private RippleBackground rippleBg;
+    private DatabaseReference favDBRef;
 
     //marker
     private MarkerOptions place1, place2;
@@ -97,7 +104,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     int PROXIMITY_RADIUS = 10000;
     double latitude, longitude;
     double end_latitude, end_longitude;
-
+    private String markName,markDes;
+    private Button btnaddFav;
     private final float DEFAULT_ZOOM = 15;
     DrawerLayout dl;
     NavigationView nv;
@@ -131,6 +139,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         btnRest = findViewById(R.id.btn_restaurant);
         btnSchool = findViewById(R.id.btn_school);
         btnGo = findViewById(R.id.btn_go);
+        btnaddFav = findViewById(R.id.btnAddFav);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MapActivity.this);
         Places.initialize(MapActivity.this, getString(R.string.google_maps_api));
@@ -286,7 +295,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             }
         });
-
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        favDBRef = FirebaseDatabase.getInstance().getReference().child("Favourites");
+        
+        btnaddFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                  markName = favDBRef.child(firebaseUser.getUid()).push().getKey();
+                  favouritesClass favClass = new favouritesClass(markName,markDes,String.valueOf(end_longitude),String.valueOf(end_latitude));
+                   favDBRef.child(firebaseUser.getUid()).child(markName).setValue(favClass);
+                }catch (Exception err){
+                    Toast.makeText(MapActivity.this, "Make sure a maker has been clicked", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
@@ -605,6 +628,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public boolean onMarkerClick(@NonNull Marker marker) {
         end_latitude = marker.getPosition().latitude;
         end_longitude = marker.getPosition().longitude;
+
+        markDes = marker.getTitle();
 
         return false;
     }

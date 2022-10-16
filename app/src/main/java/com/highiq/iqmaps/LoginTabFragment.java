@@ -70,6 +70,8 @@ public class LoginTabFragment extends Fragment {
                             if (task.isSuccessful()) {
                                 Context context = view.getContext();
                                 Toast.makeText(context, "Successfully Logged in", Toast.LENGTH_SHORT).show();
+                                FirebaseUser currentUser = mAuth.getCurrentUser();
+
                                 Intent intent = new Intent(context,PermissionsActivity.class);
                                 startActivity(intent);
 
