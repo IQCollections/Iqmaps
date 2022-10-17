@@ -161,7 +161,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ReadSettings values = snapshot.getValue(ReadSettings.class);
                 METRIC = values.getDistanceMeasurement();
-                LANDMARK = values.getLandmark();
+                LANDMARK = values.getLandmark().toLowerCase();
+
             }
 
             @Override
