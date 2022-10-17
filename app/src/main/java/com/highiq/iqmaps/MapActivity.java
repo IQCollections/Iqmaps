@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -69,6 +70,7 @@ import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 import com.skyfishjy.library.RippleBackground;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,22 +91,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private View mapView;
     private Button btnFind;
     private Button btnGo;
+    private TextView txtDistance,txtTime;
+
     private RippleBackground rippleBg;
     private DatabaseReference favDBRef;
-
+    //changing types of filters
+    public String LANDMARK;
+    public String METRIC;
     //marker
     private MarkerOptions place1, place2;
     private Polyline currentPolyline;
 
 
     //nearby place
-    private Button btnHospital;
-    private Button btnRest;
-    private Button btnSchool;
+
     int PROXIMITY_RADIUS = 10000;
     double latitude, longitude;
     double end_latitude, end_longitude;
-    private String markName,markDes;
+    public String markName,markDes;
     private Button btnaddFav;
     private final float DEFAULT_ZOOM = 15;
     DrawerLayout dl;
@@ -124,20 +128,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         nv.bringToFront();
 
         nv.setNavigationItemSelectedListener(this);
-
+        //Setting the type of filters
+        LANDMARK = "school";
+        METRIC = "Kms" ;
         materialSearchBar = findViewById(R.id.searchBar);
         materialSearchBar.setNavButtonEnabled(false);
         btnFind = findViewById(R.id.btn_find);
         rippleBg = findViewById(R.id.ripple_bg);
+        txtDistance = findViewById(R.id.txtDistance);
+        txtTime = findViewById(R.id.txtTravelTime);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         mapView = mapFragment.getView();
 
         //btn go
-        btnHospital = findViewById(R.id.btn_hospital);
-        btnRest = findViewById(R.id.btn_restaurant);
-        btnSchool = findViewById(R.id.btn_school);
         btnGo = findViewById(R.id.btn_go);
         btnaddFav = findViewById(R.id.btnAddFav);
 
@@ -278,7 +283,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         StringBuilder stringMapsIcons = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
                         stringMapsIcons.append("location="+currentMarkerLocation.latitude+","+currentMarkerLocation.longitude);
                         stringMapsIcons.append("&radius=10000");
-                        stringMapsIcons.append("&type=school");
+                        stringMapsIcons.append("&type="+LANDMARK);
                         stringMapsIcons.append("&sensor=true");
                         stringMapsIcons.append("&key="+getResources().getString(R.string.google_maps_api));
 
@@ -302,7 +307,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 try{
-                    if(markName.isEmpty())  {
+                    if(markDes.equals(null))  {
                        Toast.makeText(MapActivity.this, "Select a marker!", Toast.LENGTH_SHORT).show();
                     }else {
                   markName = favDBRef.child(firebaseUser.getUid()).push().getKey();
@@ -310,7 +315,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                    favDBRef.child(firebaseUser.getUid()).child(markName).setValue(favClass);
                     Toast.makeText(MapActivity.this, "Favourite Added!", Toast.LENGTH_SHORT).show(); }
                 }catch (Exception err){
-                    Toast.makeText(MapActivity.this, "Make sure a marker has been clicked", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapActivity.this, err.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -499,83 +504,64 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void onClick(View v) {
+        try {
         LatLng currentMarkerLocation = mMap.getCameraPosition().target;
         Object dataTransfer[] = new Object[2];
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
         String url;
 
         switch (v.getId()) {
-            case R.id.btn_hospital:
-                mMap.clear();
-                String hospital = "hospital";
-                url = getUrl(currentMarkerLocation.latitude, currentMarkerLocation.longitude, hospital);
-
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-
-
-                getNearbyPlaces.execute(dataTransfer);
-                Toast.makeText(MapActivity.this, "Showing nearby Hospitals", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.btn_restaurant:
-                mMap.clear();
-                String restaurant = "restaurant";
-                url = getUrl(currentMarkerLocation.latitude, currentMarkerLocation.longitude, restaurant);
-
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-
-
-                getNearbyPlaces.execute(dataTransfer);
-                Toast.makeText(MapActivity.this, "Showing nearby restaurants", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.btn_school:
-                mMap.clear();
-                String school = "school";
-                url = getUrl(currentMarkerLocation.latitude, currentMarkerLocation.longitude, school);
-
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-
-
-                getNearbyPlaces.execute(dataTransfer);
-                Toast.makeText(MapActivity.this, "Showing nearby schools", Toast.LENGTH_SHORT).show();
-                break;
             case R.id.btn_go:
-               dataTransfer = new Object[3];
-                url = getDirectionsUrl();
-                GetDirections getDirections = new GetDirections();
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-                dataTransfer[2] = new LatLng(end_latitude, end_longitude );
-                findUserLocation();
-                place1 = new MarkerOptions().position(new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude())).title("location 1");
-                place2 = new MarkerOptions().position(new LatLng(end_latitude, end_longitude)).title("position 2");
 
-                new FetchURL(MapActivity.this).execute(getUrlDirections(place1.getPosition(), place2.getPosition(), "driving"), "driving");
+                    dataTransfer = new Object[3];
+                    url = getDirectionsUrl();
+                    GetDirections getDirections = new GetDirections();
+                    dataTransfer[0] = mMap;
+                    dataTransfer[1] = url;
+                    dataTransfer[2] = new LatLng(end_latitude, end_longitude);
+                    findUserLocation();
+                    place1 = new MarkerOptions().position(new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude())).title("location 1");
+                    place2 = new MarkerOptions().position(new LatLng(end_latitude, end_longitude)).title("position 2");
 
-                getDirections.execute(dataTransfer);
+                    new FetchURL(MapActivity.this).execute(getUrlDirections(place1.getPosition(), place2.getPosition(), "driving"), "driving");
 
-                btnGo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        findUserLocation();
+                    float distance[] = new float[1];
+                    Location.distanceBetween(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude(), end_latitude, end_longitude, distance);
+                    double finalDistance,traveltime;
+                    DecimalFormat df2 = new DecimalFormat("#.##");
+                    //Displaying in km
+                    if(METRIC.equals("Kms")){
+                         finalDistance = distance[0] / 1000;
+                        txtDistance.setText(df2.format(finalDistance)+ " KM");
+                        //Time = distance/speed
+                         traveltime = (finalDistance/45 )*60;
 
-                        place1 = new MarkerOptions().position(new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude())).title("location 1");
-                        place2 = new MarkerOptions().position(new LatLng(end_latitude, end_longitude)).title("position 2");
-
-                        new FetchURL(MapActivity.this).execute(getUrlDirections(place1.getPosition(), place2.getPosition(), "driving"), "driving");
+                    }else{
+                        finalDistance = (distance[0]/1000) *0.621371;
+                        txtDistance.setText(df2.format(finalDistance)+" Miles");
+                        traveltime = (finalDistance/30)*60;
 
                     }
-                });
+                String s = String.format("%.0f", traveltime);
+                txtTime.setText("Time: "+s+" Min");
+
+                    Toast.makeText(this, df2.format(finalDistance), Toast.LENGTH_SHORT).show();
+
+                    getDirections.execute(dataTransfer);
+
+
                 break;
         }
+        }catch (Exception err){
+        Toast.makeText(this, "Please select a marker", Toast.LENGTH_SHORT).show();
+    }
     }
 
     private String getUrlDirections(LatLng origin, LatLng dest, String directionMode) {
+        findUserLocation();
         LatLng currentMarkerLocation = mMap.getCameraPosition().target;
         // origin of route
-        String str_origin = "origin=" + currentMarkerLocation.latitude + ","+ currentMarkerLocation.longitude;
+        String str_origin = "origin=" + mMap.getMyLocation().getLatitude()+ ","+ mMap.getMyLocation().getLongitude();
         // destination of route
         String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
         // mode
@@ -633,7 +619,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public boolean onMarkerClick(@NonNull Marker marker) {
         end_latitude = marker.getPosition().latitude;
         end_longitude = marker.getPosition().longitude;
-
+        markName = marker.getId();
         markDes = marker.getTitle();
 
         return false;

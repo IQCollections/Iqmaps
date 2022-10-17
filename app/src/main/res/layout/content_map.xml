@@ -26,48 +26,9 @@
         app:rb_scale="6">
 
 
-        <Button
-            android:id="@+id/btnAddFav"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="94dp"
-            android:layout_marginBottom="22dp"
-            android:text="AddFav" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
-            <Button
-                android:id="@+id/btn_hospital"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="60dp"
-                android:layout_marginLeft="2dp"
-                android:onClick="onClick"
-                android:text="Hospital" />
 
-            <Button
-                android:id="@+id/btn_restaurant"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="60dp"
-                android:layout_marginLeft="2dp"
-                android:onClick="onClick"
-                android:text="Restaurant" />
-
-            <Button
-                android:id="@+id/btn_school"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="60dp"
-                android:layout_marginLeft="2dp"
-                android:onClick="onClick"
-                android:text="School" />
-
-        </LinearLayout>
     </com.skyfishjy.library.RippleBackground>
 
 
@@ -86,6 +47,32 @@
         android:outlineProvider="bounds"
         app:mt_placeholder="Search a place"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        android:layout_margin="65dp"
+        android:backgroundTint="@color/white">
+
+        <TextView
+            android:id="@+id/txtDistance"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/txtTravelTime"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -125,6 +112,20 @@
         android:layout_marginVertical="20dp"
         android:layout_marginLeft="140dp"
         android:onClick="onClick"
-        android:text="Go" />
+        android:text="Go"
+        android:textColor="@color/black"
+        android:textStyle="bold"/>
 
+    <Button
+        android:id="@+id/btnAddFav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="70dp"
+        android:layout_marginBottom="20dp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+
+        android:text="AddFav" />
 </RelativeLayout>
