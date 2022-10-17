@@ -71,7 +71,7 @@ public class SignUpTabFragment extends Fragment {
                         public void onComplete(@NonNull Task<AuthResult> task) {
 
                             if (task.isSuccessful()) {
-                                SettingsClass settingsClass = new SettingsClass("", "", "Kms", false, false, false, false, false);
+                                SettingsClass settingsClass = new SettingsClass("", "", "Kms", "");
                                 dbRef.child(uid.getUid()).setValue(settingsClass);
                                 Toast.makeText(getActivity(), "Succesfull Sign Up!", Toast.LENGTH_SHORT).show();
 

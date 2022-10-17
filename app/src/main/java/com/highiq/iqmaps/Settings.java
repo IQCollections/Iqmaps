@@ -40,10 +40,8 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
     private RadioButton rbnKms;
     private RadioButton rbnMiles;
     private Switch swtRestaurant;
-    private Switch swtBars;
-    private Switch swtSports;
-    private Switch swtGroceries;
-    private Switch swtHistory;
+    private Switch swtSchools;
+    private Switch swtHospitals;
     DrawerLayout dl;
     NavigationView nv;
     ListView listView;
@@ -59,10 +57,8 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
         rbnKms = findViewById(R.id.radioButtonKms);
         rbnMiles = findViewById(R.id.radioButtonMiles);
         swtRestaurant = findViewById(R.id.switchRestaurants);
-        swtBars = findViewById(R.id.switchBars);
-        swtSports = findViewById(R.id.switchSports);
-        swtGroceries = findViewById(R.id.switchGroceries);
-        swtHistory = findViewById(R.id.switchHistory);
+        swtSchools = findViewById(R.id.switchSchools);
+        swtHospitals = findViewById(R.id.switchHospitals);
         dl = findViewById(R.id.settings_layout);
         nv = findViewById(R.id.nav_view);
         dbRef = FirebaseDatabase.getInstance().getReference().child("Settings");
@@ -76,11 +72,7 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
                 String phone = values.getPhone();
                 String address = values.getAddress();
                 String metrics = values.getDistanceMeasurement();
-                boolean restaurant = values.isRestaurants();
-                boolean bars = values.isBars();
-                boolean sports = values.isSports();
-                boolean groceries = values.isGroceries();
-                boolean history = values.isHistory();
+                String landmark = values.getLandmark();
                 editPhone.setText(phone);
                 editAddress.setText(address);
                 if(metrics.equals("Kms")){
@@ -88,11 +80,13 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
                 } else if(metrics.equals("Miles")){
                     rbnMiles.setChecked(true);
                 }
-                swtRestaurant.setChecked(restaurant);
-                swtBars.setChecked(bars);
-                swtSports.setChecked(sports);
-                swtGroceries.setChecked(groceries);
-                swtHistory.setChecked(history);
+                if(landmark.equals("Restaurants")){
+                    swtRestaurant.setChecked(true);
+                } else if(landmark.equals("Schools")){
+                    swtSchools.setChecked(true);
+                } else if(landmark.equals("Hospitals")){
+                    swtHospitals.setChecked(true);
+                }
             }
 
             @Override
@@ -104,11 +98,9 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
 
         onRadioButtonClicked(rbnKms, rbnMiles);
         onRadioButtonClicked(rbnMiles, rbnKms);
-        switchListener(swtRestaurant);
-        switchListener(swtBars);
-        switchListener(swtSports);
-        switchListener(swtGroceries);
-        switchListener(swtHistory);
+        switchListener(swtRestaurant, swtSchools, swtHospitals);
+        switchListener(swtSchools, swtRestaurant, swtHospitals);
+        switchListener(swtHospitals, swtRestaurant, swtSchools);
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,51 +121,19 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
         nv.setNavigationItemSelectedListener(this);
     }
 
-    public void switchListener(Switch swt){
+    public void switchListener(Switch swt, Switch swt2, Switch swt3){
         swt.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                String input = swt.getText().toString();
-                dbRef = FirebaseDatabase.getInstance().getReference().child("Settings");
-                uid = FirebaseAuth.getInstance().getCurrentUser();
                 if(isChecked) {
-                    switch (input) {
-                        case "Restaurants":
-                            dbRef.child(uid.getUid()).child("restaurants").setValue(true);
-                            break;
-                        case "Bars":
-                            dbRef.child(uid.getUid()).child("bars").setValue(true);
-                            break;
-                        case "Sports":
-                            dbRef.child(uid.getUid()).child("sports").setValue(true);
-                            break;
-                        case "Groceries":
-                            dbRef.child(uid.getUid()).child("groceries").setValue(true);
-                            break;
-                        case "Historical Sites":
-                            dbRef.child(uid.getUid()).child("history").setValue(true);
-                            break;
-                    }
+                    String input = swt.getText().toString();
+                    dbRef = FirebaseDatabase.getInstance().getReference().child("Settings");
+                    uid = FirebaseAuth.getInstance().getCurrentUser();
+                    dbRef.child(uid.getUid()).child("landmark").setValue(input);
+                    swt2.setChecked(false);
+                    swt3.setChecked(false);
+
                     //add true to database
-                } else {
-                    switch (input) {
-                        case "Restaurants":
-                            dbRef.child(uid.getUid()).child("restaurants").setValue(false);
-                            break;
-                        case "Bars":
-                            dbRef.child(uid.getUid()).child("bars").setValue(false);
-                            break;
-                        case "Sports":
-                            dbRef.child(uid.getUid()).child("sports").setValue(false);
-                            break;
-                        case "Groceries":
-                            dbRef.child(uid.getUid()).child("groceries").setValue(false);
-                            break;
-                        case "Historical Sites":
-                            dbRef.child(uid.getUid()).child("history").setValue(false);
-                            break;
-                    //add false to database
-                    }
                 }
             }
         });

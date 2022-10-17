@@ -64,8 +64,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 import com.skyfishjy.library.RippleBackground;
@@ -79,6 +82,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    private FirebaseUser uid;
+    private DatabaseReference dbRef;
     FirebaseUser firebaseUser ;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlacesClient placesClient;
@@ -129,8 +134,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         nv.setNavigationItemSelectedListener(this);
         //Setting the type of filters
-        LANDMARK = "school";
-        METRIC = "Kms" ;
         materialSearchBar = findViewById(R.id.searchBar);
         materialSearchBar.setNavButtonEnabled(false);
         btnFind = findViewById(R.id.btn_find);
@@ -150,6 +153,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Places.initialize(MapActivity.this, getString(R.string.google_maps_api));
         placesClient = Places.createClient(this);
         final AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+
+        uid = FirebaseAuth.getInstance().getCurrentUser();
+        dbRef = FirebaseDatabase.getInstance().getReference().child("Settings").child(uid.getUid());
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ReadSettings values = snapshot.getValue(ReadSettings.class);
+                METRIC = values.getDistanceMeasurement();
+                LANDMARK = values.getLandmark();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        dbRef.addValueEventListener(postListener);
 
         materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
             @Override
@@ -279,7 +299,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     @Override
                     public void run() {
                         rippleBg.stopRippleAnimation();
-
+                        Log.i("landmark", LANDMARK);
                         StringBuilder stringMapsIcons = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
                         stringMapsIcons.append("location="+currentMarkerLocation.latitude+","+currentMarkerLocation.longitude);
                         stringMapsIcons.append("&radius=10000");

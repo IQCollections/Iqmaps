@@ -179,56 +179,24 @@
                     tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
 
                 <Switch
-                    android:id="@+id/switchBars"
+                    android:id="@+id/switchSchools"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="90dp"
-                    android:text="Bars"
-                    android:textSize="20dp"
-                    tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="horizontal">
-
-                <Switch
-                    android:id="@+id/switchSports"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="50dp"
-                    android:text="Sports"
-                    android:textSize="20dp"
-                    tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
-
-                <Switch
-                    android:id="@+id/switchGroceries"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="45dp"
-                    android:text="Groceries"
+                    android:text="Schools"
                     android:textSize="20dp"
                     tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
 
             <Switch
-                android:id="@+id/switchHistory"
+                android:id="@+id/switchHospitals"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="100dp"
-                android:text="Historical Sites"
+                android:text="Hospitals"
                 android:textSize="20dp"
                 tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
-
-
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
