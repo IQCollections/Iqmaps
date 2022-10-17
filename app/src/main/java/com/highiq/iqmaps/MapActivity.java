@@ -161,7 +161,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ReadSettings values = snapshot.getValue(ReadSettings.class);
                 METRIC = values.getDistanceMeasurement();
-                LANDMARK = values.getLandmark();
+                String landmarkValue = values.getLandmark();
+                if(landmarkValue.equals("Restaurants")){
+                    LANDMARK = "restaurant";
+                } else if(landmarkValue.equals("Schools")){
+                    LANDMARK = "school";
+                } else if(landmarkValue.equals("Hospitals")){
+                    LANDMARK = "hospital";
+                }
             }
 
             @Override
