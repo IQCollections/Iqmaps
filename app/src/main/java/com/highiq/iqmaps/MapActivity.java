@@ -1,5 +1,36 @@
 package com.highiq.iqmaps;
-
+/*
+    Code Attribution 1:
+    Source: YouTube
+    Source URL link:https://www.youtube.com/watch?v=iWYsBDCGhGw
+    Title Page/Video: How to Create SearchView on Google Map in Android Studio | SearchViewOnMap | Android Coding
+    Author name/tag/channel: Android Coding
+    Author channel/profile url link: https://www.youtube.com/c/AndroidCoding
+ */
+/*
+    Code Attribution 2:
+    Source: YouTube
+    Source URL link: https://www.youtube.com/watch?v=ifoVBdtXsv0
+    Title Page/Video: Current Location and Nearby Places Suggestions in Android | Google Maps API & Places SDK | 2019
+    Author name/tag/channel: Abbas Hassan
+    Author channel/profile url link: https://www.youtube.com/channel/UC-bTRak4oQoHkPGL8N22tjQ
+ */
+/*
+    Code Attribution 3:
+    Source: YouTube
+    Source URL link: https://www.youtube.com/watch?v=eiexkzCI8m8
+    Title Page/Video: How to Implement Google Map in Android Studio | GoogleMap | Android Coding
+    Author name/tag/channel: Android Coding
+    Author channel/profile url link: https://www.youtube.com/c/AndroidCoding
+ */
+/*
+    Code Attribution 4:
+    Source: YouTube
+    Source URL link:https://www.youtube.com/watch?v=1f4b2-Y_q2A&list=PLgCYzUzKIBE-SZUrVOsbYMzH7tPigT3gi&index=4
+    Title Page/Video: Google Services, GPS, and Location Permissions
+    Author name/tag/channel: CodingWithMitch
+    Author channel/profile url link: https://www.youtube.com/c/CodingWithMitch
+ */
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -153,11 +184,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Places.initialize(MapActivity.this, getString(R.string.google_maps_api));
         placesClient = Places.createClient(this);
         final AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
-
+        //firebase
         uid = FirebaseAuth.getInstance().getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference().child("Settings").child(uid.getUid());
         ValueEventListener postListener = new ValueEventListener() {
-            @Override
+            @Override//landmark type
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ReadSettings values = snapshot.getValue(ReadSettings.class);
                 METRIC = values.getDistanceMeasurement();
@@ -177,7 +208,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         };
         dbRef.addValueEventListener(postListener);
-
+        //setting the search bar
         materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
             @Override
             public void onSearchStateChanged(boolean enabled) {
@@ -235,7 +266,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                 });
             }
-
+            //predictions for the searchbar
             @Override
             public void afterTextChanged(Editable s) {
 
@@ -296,7 +327,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void OnItemDeleteListener(int position, View v) {
 
             }
-        });
+        });//finding the landmarks using JSOn and api
         btnFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -417,7 +448,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
          btnUserLocation = findViewById(R.id.btnUserLocation);
-
+        //finding the user location
          btnUserLocation.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View view) {
@@ -486,7 +517,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                 });
     }
-
+    //setting nav bar menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -582,7 +613,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }catch (Exception err){
         Toast.makeText(this, "Please select a marker", Toast.LENGTH_SHORT).show();
     }
-    }
+    }   //setting google direction api and drawing using polyline
 
     private String getUrlDirections(LatLng origin, LatLng dest, String directionMode) {
         findUserLocation();
@@ -642,7 +673,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return googlePlaceUrl.toString();
     }
 
-    @Override
+    @Override//setting marker details
     public boolean onMarkerClick(@NonNull Marker marker) {
         end_latitude = marker.getPosition().latitude;
         end_longitude = marker.getPosition().longitude;
