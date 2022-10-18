@@ -382,88 +382,94 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        try {
 
 
-        if (mapView != null && mapView.findViewById(Integer.parseInt("1")) != null) {
-            View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            layoutParams.setMargins(0, 0, 40, 180);
-        }
+            mMap = googleMap;
 
-        //check if gps is enabled or not and then request user to enable it
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            mMap.getUiSettings().setZoomControlsEnabled(true);
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
 
-        SettingsClient settingsClient = LocationServices.getSettingsClient(MapActivity.this);
-        Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
-
-        task.addOnSuccessListener(MapActivity.this, new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                getDeviceLocation();
+            if (mapView != null && mapView.findViewById(Integer.parseInt("1")) != null) {
+                View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+                layoutParams.setMargins(0, 0, 40, 180);
             }
-        });
 
-        task.addOnFailureListener(MapActivity.this, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    ResolvableApiException resolvable = (ResolvableApiException) e;
-                    try {
-                        resolvable.startResolutionForResult(MapActivity.this, 51);
-                    } catch (IntentSender.SendIntentException e1) {
-                        e1.printStackTrace();
+            //check if gps is enabled or not and then request user to enable it
+            LocationRequest locationRequest = LocationRequest.create();
+            locationRequest.setInterval(10000);
+            locationRequest.setFastestInterval(5000);
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+
+            SettingsClient settingsClient = LocationServices.getSettingsClient(MapActivity.this);
+            Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
+
+            task.addOnSuccessListener(MapActivity.this, new OnSuccessListener<LocationSettingsResponse>() {
+                @Override
+                public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                    getDeviceLocation();
+                }
+            });
+
+            task.addOnFailureListener(MapActivity.this, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    if (e instanceof ResolvableApiException) {
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        try {
+                            resolvable.startResolutionForResult(MapActivity.this, 51);
+                        } catch (IntentSender.SendIntentException e1) {
+                            e1.printStackTrace();
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                if (materialSearchBar.isSuggestionsVisible())
-                    materialSearchBar.clearSuggestions();
-                if (materialSearchBar.isSearchEnabled())
-                    materialSearchBar.disableSearch();
-                return false;
-            }
-        });
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(@NonNull Marker marker) {
-                Toast.makeText(MapActivity.this, "This location is: "+marker.getTitle(), Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
+            mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                @Override
+                public boolean onMyLocationButtonClick() {
+                    if (materialSearchBar.isSuggestionsVisible())
+                        materialSearchBar.clearSuggestions();
+                    if (materialSearchBar.isSearchEnabled())
+                        materialSearchBar.disableSearch();
+                    return false;
+                }
+            });
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(@NonNull Marker marker) {
+                    Toast.makeText(MapActivity.this, "This location is: " + marker.getTitle(), Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            });
 
-         btnUserLocation = findViewById(R.id.btnUserLocation);
-        //finding the user location
-         btnUserLocation.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View view) {
-                 try {
+            btnUserLocation = findViewById(R.id.btnUserLocation);
+            //finding the user location
+            btnUserLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
 
-                    findUserLocation();
+                        findUserLocation();
 
-                 } catch (SecurityException e) {
-                     Log.e("Exception: %s", e.getMessage());
-                 }
-             }
-         });
+                    } catch (SecurityException e) {
+                        Log.e("Exception: %s", e.getMessage());
+                    }
+                }
+            });
 
-        // directions
-        mMap.setOnMarkerClickListener(this);
+            // directions
+            mMap.setOnMarkerClickListener(this);
+        }catch (Exception err){
+
+        }
     }
 
 
@@ -541,14 +547,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.nav_map:
                 Intent intent = new Intent(this, MapActivity.class);
                 startActivity(intent);
+                finish();
                 break;
             case R.id.nav_favourite:
                 intent = new Intent(this, favourites.class);
                 startActivity(intent);
+                finish();
                 break;
             case R.id.nav_settings:
                 intent = new Intent(this, Settings.class);
                 startActivity(intent);
+                finish();
                 break;
         }
         dl.closeDrawer(GravityCompat.START);
@@ -616,21 +625,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }   //setting google direction api and drawing using polyline
 
     private String getUrlDirections(LatLng origin, LatLng dest, String directionMode) {
-        findUserLocation();
-        LatLng currentMarkerLocation = mMap.getCameraPosition().target;
-        // origin of route
-        String str_origin = "origin=" + mMap.getMyLocation().getLatitude()+ ","+ mMap.getMyLocation().getLongitude();
-        // destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-        // mode
-        String mode = "mode=" + directionMode;
-        // building the parameters of the web service
-        String parameters = str_origin + "&" + str_dest + "&" + mode;
-        // output
-        String output = "json";
-        // building the url
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getResources().getString(R.string.google_maps_api);
-        return url;
+        try {
+            findUserLocation();
+            LatLng currentMarkerLocation = mMap.getCameraPosition().target;
+            // origin of route
+            String str_origin = "origin=" + mMap.getMyLocation().getLatitude() + "," + mMap.getMyLocation().getLongitude();
+            // destination of route
+            String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+            // mode
+            String mode = "mode=" + directionMode;
+            // building the parameters of the web service
+            String parameters = str_origin + "&" + str_dest + "&" + mode;
+            // output
+            String output = "json";
+            // building the url
+            String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getResources().getString(R.string.google_maps_api);
+            return url;
+        }catch(Exception err){
+            return null;
+        }
     }
 
         private void findUserLocation(){
