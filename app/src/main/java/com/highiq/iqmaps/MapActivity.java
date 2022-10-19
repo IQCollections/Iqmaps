@@ -300,14 +300,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
                         Place place = fetchPlaceResponse.getPlace();
                         Log.i("mytag", "Place found: " + place.getName());
-                        LatLng latLngOfPlace = place.getLatLng();
-                        if (latLngOfPlace != null) {
-                            MarkerOptions markerOptions = new MarkerOptions();
-                            markerOptions.title(place.getName());
-                            markerOptions.position(latLngOfPlace);
-                            mMap.addMarker(markerOptions);
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngOfPlace, DEFAULT_ZOOM));
-                        }
+                        LatLng latLng = new LatLng(Double.parseDouble(String.valueOf(place.getLatLng().latitude)),Double.parseDouble(String.valueOf(place.getLatLng().longitude)));
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.title(place.getName());
+                        markerOptions.position(latLng);
+                        mMap.addMarker(markerOptions);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
