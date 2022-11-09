@@ -102,7 +102,7 @@ public class DataParser {
 
     }
 
-    /*public HashMap<String, String> parseDirections(String jsonData){
+    public HashMap<String, String> parseDirections(String jsonData){
         JSONArray jsonArray = null;
         JSONObject jsonObject;
         try {
@@ -113,9 +113,9 @@ public class DataParser {
             e.printStackTrace();
         }
         return getDuration(jsonArray);
-    }*/
+    }
 
-    public String[] parseDirections(String jsonData){
+   /* public String[] parseDirections(String jsonData){
         JSONArray jsonArray = null;
         JSONObject jsonObject;
         try {
@@ -140,7 +140,7 @@ public class DataParser {
             }
         }
         return polylines;
-    }
+    }*/
     public String getPath(JSONObject googlePathJson){
         String polyline = "";
         try {
