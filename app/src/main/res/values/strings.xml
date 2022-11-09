@@ -7,4 +7,5 @@
     <string name="google_maps_api">AIzaSyC8cLuPcApXvOHR_rcOvYuJE7YIjNoqZG4</string>
     <string name="navi_open">Open navigation drawer</string>
     <string name="navi_close">Close navigation drawer</string>
+    <string name="it_s_about_the_journey">it\'s about the journey...</string>
 </resources>
