@@ -83,7 +83,7 @@
                         android:layout_marginBottom="15dp"
                         android:ems="10"
                         android:inputType="phone"
-                        android:text="082 451 9972"
+                        android:text="000 0000 0000"
                         tools:ignore="MissingConstraints" />
 
                     <TextView
@@ -102,7 +102,7 @@
                         android:layout_marginBottom="5dp"
                         android:ems="10"
                         android:inputType="textPersonName"
-                        android:text="43 Mandeville Road, Bryanston"
+                        android:text="43 Name Road, Suburb"
                         tools:ignore="MissingConstraints" />
                 </LinearLayout>
 
@@ -152,6 +152,25 @@
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:text="Miles" />
+            </RadioGroup>
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radioButtonLightMode"
+                    android:layout_marginLeft="50dp"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="Light Mode" />
+
+                <RadioButton
+                    android:id="@+id/radioButtonDarkMode"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Dark Mode" />
             </RadioGroup>
 
             <TextView

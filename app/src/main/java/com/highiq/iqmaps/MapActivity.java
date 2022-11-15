@@ -136,6 +136,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //changing types of filters
     public String LANDMARK;
     public String METRIC;
+    public String MODE;
     //marker
     private MarkerOptions place1, place2;
     private Polyline currentPolyline;
@@ -156,6 +157,32 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+//        MODE = "Dark Mode";
+        //firebase
+        uid = FirebaseAuth.getInstance().getCurrentUser();
+        dbRef = FirebaseDatabase.getInstance().getReference().child("Settings").child(uid.getUid());
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ReadSettings values = snapshot.getValue(ReadSettings.class);
+                METRIC = values.getDistanceMeasurement();
+                MODE = values.getMode();
+
+                String landmarkValue = values.getLandmark();
+                if(landmarkValue.equals("Restaurants")){
+                    LANDMARK = "restaurant";
+                } else if(landmarkValue.equals("Schools")){
+                    LANDMARK = "school";
+                } else if(landmarkValue.equals("Hospitals")){
+                    LANDMARK = "hospital";
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         dl = findViewById(R.id.mapsLayout);
         nv = findViewById(R.id.nav_view);
@@ -186,30 +213,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Places.initialize(MapActivity.this, getString(R.string.google_maps_api));
         placesClient = Places.createClient(this);
         final AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
-        //firebase
-        uid = FirebaseAuth.getInstance().getCurrentUser();
-        dbRef = FirebaseDatabase.getInstance().getReference().child("Settings").child(uid.getUid());
-        ValueEventListener postListener = new ValueEventListener() {
-            @Override//landmark type
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ReadSettings values = snapshot.getValue(ReadSettings.class);
-                METRIC = values.getDistanceMeasurement();
-                String landmarkValue = values.getLandmark();
-                if(landmarkValue.equals("Restaurants")){
-                    LANDMARK = "restaurant";
-                } else if(landmarkValue.equals("Schools")){
-                    LANDMARK = "school";
-                } else if(landmarkValue.equals("Hospitals")){
-                    LANDMARK = "hospital";
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-        dbRef.addValueEventListener(postListener);
         //setting the search bar
         materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
             @Override
@@ -378,23 +382,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
     }
-
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         try {
-            try {
-                // Customise the styling of the base map using a JSON object defined
-                // in a raw resource file.
-                boolean success = googleMap.setMapStyle(
-                        MapStyleOptions.loadRawResourceStyle(
-                                this, R.raw.mapstyle_dark));
+            if(MODE.equals("Dark Mode")){
+                try {
+                    // Customise the styling of the base map using a JSON object defined
+                    // in a raw resource file.
+                    boolean success = googleMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(
+                                    this, R.raw.mapstyle_dark));
 
-                if (!success) {
-                    Log.e("MapActivity", "Style parsing failed.");
+                    if (!success) {
+                        Log.e("MapActivity", "Style parsing failed.");
+                    }
+                } catch (Resources.NotFoundException e) {
+                    Log.e("MapActivity", "Can't find style. Error: ", e);
                 }
-            } catch (Resources.NotFoundException e) {
-                Log.e("MapActivity", "Can't find style. Error: ", e);
             }
 
             mMap = googleMap;

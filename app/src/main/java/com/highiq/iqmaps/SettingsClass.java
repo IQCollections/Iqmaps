@@ -4,12 +4,14 @@ public class SettingsClass {
     String phone;
     String address;
     String distanceMeasurement;
+    String mode;
     String landmark;
 
-    public SettingsClass(String phone, String address, String distanceMeasurement, String landmark) {
+    public SettingsClass(String phone, String address, String distanceMeasurement, String mode, String landmark) {
         this.phone = phone;
         this.address = address;
         this.distanceMeasurement = distanceMeasurement;
+        this.mode = mode;
         this.landmark = landmark;
     }
 
@@ -34,6 +36,10 @@ public class SettingsClass {
     }
 
     public void setDistanceMeasurement(String distanceMeasurement) { this.distanceMeasurement = distanceMeasurement; }
+
+    public String getMode() { return mode; }
+
+    public void setMode(String mode) { this.mode = mode; }
 
     public String getLandmark() { return landmark; }
 

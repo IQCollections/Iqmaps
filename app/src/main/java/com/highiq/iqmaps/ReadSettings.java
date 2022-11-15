@@ -4,6 +4,7 @@ public class ReadSettings {
     String phone;
     String address;
     String distanceMeasurement;
+    String mode;
     String landmark;
 
     public String getPhone() {
@@ -17,6 +18,8 @@ public class ReadSettings {
     public String getDistanceMeasurement() {
         return distanceMeasurement;
     }
+
+    public String getMode() { return mode; }
 
     public String getLandmark() { return landmark; }
 }

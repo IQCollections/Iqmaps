@@ -39,6 +39,8 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
     private EditText editAddress;
     private RadioButton rbnKms;
     private RadioButton rbnMiles;
+    private RadioButton rbnLight;
+    private RadioButton rbnDark;
     private Switch swtRestaurant;
     private Switch swtSchools;
     private Switch swtHospitals;
@@ -56,6 +58,8 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
         editAddress = findViewById(R.id.editTextAddress);
         rbnKms = findViewById(R.id.radioButtonKms);
         rbnMiles = findViewById(R.id.radioButtonMiles);
+        rbnLight = findViewById(R.id.radioButtonLightMode);
+        rbnDark = findViewById(R.id.radioButtonDarkMode);
         swtRestaurant = findViewById(R.id.switchRestaurants);
         swtSchools = findViewById(R.id.switchSchools);
         swtHospitals = findViewById(R.id.switchHospitals);
@@ -72,14 +76,23 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
                 String phone = values.getPhone();
                 String address = values.getAddress();
                 String metrics = values.getDistanceMeasurement();
+                String mode = values.getMode();
                 String landmark = values.getLandmark();
                 editPhone.setText(phone);
                 editAddress.setText(address);
+
                 if(metrics.equals("Kms")){
                     rbnKms.setChecked(true);
                 } else if(metrics.equals("Miles")){
                     rbnMiles.setChecked(true);
                 }
+
+                if(mode.equals("Light Mode")){
+                    rbnLight.setChecked(true);
+                } else if(mode.equals("Dark Mode")){
+                    rbnDark.setChecked(true);
+                }
+
                 if(landmark.equals("Restaurants")){
                     swtRestaurant.setChecked(true);
                 } else if(landmark.equals("Schools")){
@@ -96,8 +109,12 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
         };
         dbref2.addValueEventListener(postListener);
 
-        onRadioButtonClicked(rbnKms, rbnMiles);
-        onRadioButtonClicked(rbnMiles, rbnKms);
+        onRadioButtonMetricsClicked(rbnKms, rbnMiles);
+        onRadioButtonMetricsClicked(rbnMiles, rbnKms);
+
+        onRadioButtonModeClicked(rbnLight, rbnDark);
+        onRadioButtonModeClicked(rbnDark, rbnLight);
+
         switchListener(swtRestaurant, swtSchools, swtHospitals);
         switchListener(swtSchools, swtRestaurant, swtHospitals);
         switchListener(swtHospitals, swtRestaurant, swtSchools);
@@ -139,7 +156,7 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
         });
     }
 
-    public void onRadioButtonClicked(RadioButton rbnCheck, RadioButton rbnAlternate) {
+    public void onRadioButtonMetricsClicked(RadioButton rbnCheck, RadioButton rbnAlternate) {
         rbnCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -151,6 +168,23 @@ public class Settings extends AppCompatActivity implements NavigationView.OnNavi
                     dbRef = FirebaseDatabase.getInstance().getReference().child("Settings");
                     uid = FirebaseAuth.getInstance().getCurrentUser();
                     dbRef.child(uid.getUid()).child("distanceMeasurement").setValue(input);
+                }
+            }
+        });
+    }
+
+    public void onRadioButtonModeClicked(RadioButton rbnCheck, RadioButton rbnAlternate) {
+        rbnCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked) {
+                    //add true to database
+                    String input = rbnCheck.getText().toString();
+                    rbnAlternate.setChecked(false);
+                    rbnAlternate.setSelected(false);
+                    dbRef = FirebaseDatabase.getInstance().getReference().child("Settings");
+                    uid = FirebaseAuth.getInstance().getCurrentUser();
+                    dbRef.child(uid.getUid()).child("mode").setValue(input);
                 }
             }
         });
